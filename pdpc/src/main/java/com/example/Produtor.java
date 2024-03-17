@@ -1,27 +1,35 @@
 package com.example;
 
-public class Produtor extends Thread {
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Produtor implements Runnable {
     private String nome;
     private Estoque estoque;
     private int iteracoes;
-    private int produto;
+    private Object lock;
+    private static AtomicInteger proximoId = new AtomicInteger(1);
 
-    public Produtor(String nome, Estoque estoque, int iteracoes) {
+    public Produtor(String nome, Estoque estoque, int iteracoes, Object lock) {
         this.nome = nome;
         this.estoque = estoque;
         this.iteracoes = iteracoes;
-        produto = 0;
+        this.lock = lock;
     }
 
+    @Override
     public void run() {
-        while (produto < iteracoes) {
-            produto++;
-            System.out.println("PRODUTOR " + nome + " PRODUZIU PRODUTO: " + produto);
-            estoque.alocar(produto);
+        for (int i = 0; i < iteracoes; i++) {
+            synchronized (lock) {
+                int id = proximoId.getAndIncrement();
+                Produto produto = new Produto(id);
+
+                System.out.println("PRODUTOR " + nome + " PRODUZIU PRODUTO: " + produto.getId());
+
+                estoque.alocar(produto);
+            }
         }
     }
 
-    // Getters e setters
     public String getNome() {
         return nome;
     }
@@ -46,7 +54,4 @@ public class Produtor extends Thread {
         this.iteracoes = iteracoes;
     }
 
-    public int getproduto() {
-        return produto;
-    }
 }
