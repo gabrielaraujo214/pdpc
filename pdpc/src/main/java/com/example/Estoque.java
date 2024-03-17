@@ -3,25 +3,28 @@ package com.example;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Estoque {
-    private LinkedBlockingQueue<Integer> estoque;
+    private LinkedBlockingQueue<Produto> estoque;
 
     public Estoque() {
-        estoque = new LinkedBlockingQueue<Integer>();
+        estoque = new LinkedBlockingQueue<Produto>();
     }
 
     public void alocar(Produto produto) {
-        estoque.add(produto.getId());
+        estoque.add(produto);
+
     }
 
     public int retirar() throws InterruptedException {
-        return estoque.take();
+        Produto produto = estoque.take();
+        // pode dar ruim
+        return produto.getId();
     }
 
     public boolean vazio() {
         return estoque.isEmpty();
     }
 
-    public LinkedBlockingQueue<Integer> getEstoque() {
+    public LinkedBlockingQueue<Produto> getEstoque() {
         return estoque;
     }
 }
